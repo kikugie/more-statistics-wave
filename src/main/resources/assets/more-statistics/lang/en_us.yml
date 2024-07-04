@@ -1,5 +1,7 @@
 stat.minecraft:
   break_bedrock: Bedrock broken using headless piston
+  break_barrier: Barrier broken using headless piston
+  break_command_block: Command block broken using headless piston
   ender_pearl_one_cm: Distance teleported with ender pearl
   firework_boost: Firework used to boost
   mend_durability: Durability repaired by mending

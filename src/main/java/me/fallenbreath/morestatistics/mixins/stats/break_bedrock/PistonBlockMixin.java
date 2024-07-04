@@ -22,10 +22,9 @@ package me.fallenbreath.morestatistics.mixins.stats.break_bedrock;
 
 import me.fallenbreath.morestatistics.MoreStatisticsRegistry;
 import me.fallenbreath.morestatistics.utils.PistonPlacingMemory;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.PistonBlock;
+import net.minecraft.block.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -51,13 +50,18 @@ public abstract class PistonBlockMixin
 	private void removeBlock(Args args, BlockState state, World world, BlockPos pistonPos, int type, int data)
 	{
 		BlockPos posToRemove = args.get(0);
-		if (world.getBlockState(posToRemove).getBlock() == Blocks.BEDROCK)
-		{
-			ServerPlayerEntity player = PistonPlacingMemory.getTheOneWhoJustPlacedPiston(world, pistonPos);
-			if (player != null)
-			{
-				player.increaseStat(MoreStatisticsRegistry.BREAK_BEDROCK, 1);
-			}
-		}
+		ServerPlayerEntity player = PistonPlacingMemory.getTheOneWhoJustPlacedPiston(world, pistonPos);
+		if (player == null) return;
+
+		Block target = world.getBlockState(posToRemove).getBlock();
+		Identifier stat;
+		if (target == Blocks.BEDROCK)
+			stat = MoreStatisticsRegistry.BREAK_BEDROCK;
+		else if (target == Blocks.BARRIER)
+			stat = MoreStatisticsRegistry.BREAK_BARRIER;
+		else if (target instanceof CommandBlock)
+			stat = MoreStatisticsRegistry.BREAK_COMMAND_BLOCK;
+		else return;
+		player.increaseStat(stat, 1);
 	}
 }
